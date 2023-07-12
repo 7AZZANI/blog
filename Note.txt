@@ -1,0 +1,103 @@
+Shell.
+
+
+In this one i call the model i created in models.py 
+
+>>> from .blog.models import Post  
+
+
+
+And now i will import the author Users to write on the database.
+
+>>> from django.contrib.auth.models import User 
+
+
+
+And now we use this command to show all the available users .
+
+>>> User.objects.all()
+
+
+
+then now we can show also all the available posts in the database.
+
+>>> Post.objects.all()
+
+
+
+and now i have to define the username thats im going to create the post in database using His name.
+
+>>> admin = User.objects.get(username= 'admin')
+
+
+
+So now i can start create the post from the database shell. 
+
+>>> Post.objects.create(author=admin, title='siamies', text='calm cats')
+
+
+
+If you want to show All the Posts of one user only , you can use. 
+
+>>> Post.objects.filter(author=admin)
+
+
+
+Or maybe we want to see all the posts that contain the word 'title' in the title field?
+
+>>> Post.objects.filter(title__contains='title')
+
+
+
+You can also get a list of all published posts. We do this by filtering all the posts that have published_date
+
+>>> from django.utils import timezone
+>>> Post.objects.filter(published_date__lte=timezone.now())
+
+
+
+As you saw, some methods on Post.objects return a QuerySet. The same methods can in turn also be called on a QuerySet, and will then return a new QuerySet. 
+Thus, you can combine their effect by chaining them together:
+
+>>> Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
+
+
+
+
+--- its important in django html when you want to load the css file to the html file by writing this . 
+
+<link rel="stylesheet" href="{% static 'css/blog.css' %}">
+
+
+
+
+
+--- To cunfigure the static folder that where the css and images stored you most use on the settings.py 
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')
+]
+
+
+--- The 'instance=' parameter is set to the retrieved post object, which allows for editing an existing post.
+Example : 
+      if request.method == 'POST':
+        form = PostForm(request.POST, instance=post)
+
+
+-- The 'commit=False' argument prevents the object from being saved to the database immediately.
+Example : 
+      if form.is_valid():
+            post = form.save(commit=False)
+
+
+
+--- post.author = request.user - The author field of the post object is set to the currently authenticated user (request.user).
+
+ --- {% if user.is_authenticated %} {% endif %} this one using For security to make sure only user can post or edit. 
+ Example : 
+            {% if user.is_authenticated %}
+                <a class="btn-secondary" href="{% url 'new_post' %}">
+                  {% include 'blog/icons/plus-_2_.svg' %}
+                </a>
+            {% endif %} 
